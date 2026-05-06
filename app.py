@@ -64,7 +64,7 @@ Real-time spectral analysis for downwind foiling and surf planning.
 st.sidebar.header("🌍 Region & Location")
 area = st.sidebar.selectbox("Select Area", list(STATIONS.keys()))
 location_id = st.sidebar.selectbox("Select Station", list(STATIONS[area].keys()), 
-                                  format_func=lambda x: STATIONS[area][x])
+                                  format_func=lambda x: f"Station {x}: {STATIONS[area][x]}")
 
 # Load presets if available
 default_min, default_max, default_tp = 270, 330, 15
@@ -103,6 +103,22 @@ if data:
     # Use the buoy's actual collection time
     buoy_time_local = localize_time(data['time'])
     
+    # Header with Link
+    st.subheader(f"Current Swell Analysis: {STATIONS[area][location_id]} (Station {location_id})")
+    cdip_url = f"https://cdip.ucsd.edu/m/products/?stn={location_id}p1"
+    st.markdown(f"🔗 [View Official CDIP Station {location_id} Data]({cdip_url})")
+    st.info(f"📅 Data Collected by Buoy: {buoy_time_local}")
+
+    # Map Visualization
+    try:
+        # Extract lat/lon from dataset
+        lat = float(ds.gpsLatitude.values[-1])
+        lon = float(ds.gpsLongitude.values[-1])
+        map_data = pd.DataFrame({'lat': [lat], 'lon': [lon]})
+        st.map(map_data, zoom=8)
+    except Exception as e:
+        st.warning("Could not load buoy location map.")
+    
     # Top metrics
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Significant Height (Hs)", f"{data['hs']:.2f} m")
@@ -111,9 +127,6 @@ if data:
     col4.metric("Buoy Time (Local)", buoy_time_local)
 
     # Plots row 1: Current Spectrum
-    st.subheader(f"Current Swell Analysis: {STATIONS[area][location_id]}")
-    st.info(f"📅 Data Collected by Buoy: {buoy_time_local}")
-    
     col_spec1, col_spec2 = st.columns(2)
     with col_spec1:
         # TOTAL Spectrum (No directional filter)
