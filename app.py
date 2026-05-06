@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from src.data_fetcher import fetch_latest_swell_data, get_history
-from src.plots import plot_spectral_energy, plot_polar_direction, plot_history_ts, plot_filtered_spectrum
+from src.plots import plot_spectral_energy, plot_polar_direction, plot_history_ts, plot_filtered_spectrum, plot_hs_comparison
 import datetime
 import pytz
 
