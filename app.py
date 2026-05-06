@@ -6,36 +6,38 @@ import datetime
 import pytz
 
 # --- Configuration & Presets ---
+# Verified active stations as of May 2026
 STATIONS = {
     "Santa Cruz / Monterey": {
-        "157": "Monterey Bay North Shelf (SC North)",
-        "254": "Point Santa Cruz (Steamer Lane)",
-        "158": "Cabrillo Point (Monterey)",
-        "156": "Point Sur (Offshore Central)",
+        "157": "Point Sur (Offshore SC)",
+        "156": "Monterey Canyon Outer",
+        "158": "Cabrillo Point (Monterey - Stale)",
     },
     "Santa Barbara / Ventura": {
-        "261": "Santa Barbara West (Offshore)",
-        "107": "Santa Barbara Channel (Anacapa Passage)",
-        "111": "Anacapa Passage",
-        "071": "Harvest (Pt Conception)",
+        "203": "Santa Cruz Basin (Offshore SB)",
+        "071": "Harvest (Point Conception)",
     },
     "Malibu / LA": {
-        "118": "Leo Carrillo Nearshore",
-        "105": "Malibu Nearshore",
         "103": "Topanga Nearshore",
-        "028": "Santa Monica Basin (Offshore)",
+        "028": "Santa Monica Bay",
     },
     "Northern California": {
         "029": "Point Reyes",
         "142": "San Francisco Bar",
-        "168": "Cape Mendocino",
-        "094": "Bodega Bay",
+        "168": "Humboldt Bay North Spit",
+        "094": "Cape Mendocino",
+    },
+    "Southern California": {
+        "191": "Point Loma South",
+        "045": "Oceanside Offshore",
+        "100": "Torrey Pines Outer",
     },
     "Hawaii": {
         "187": "Pauwela (Maui North)",
-        "098": "Mokapu (Oahu East)",
+        "106": "Waimea Bay (Oahu North)",
         "202": "Hanalei (Kauai North)",
-        "165": "Barbers Point (Oahu SW)",
+        "098": "Mokapu (Oahu East)",
+        "238": "Barbers Point (Oahu SW)",
     }
 }
 
@@ -43,10 +45,10 @@ STATIONS = {
 # min, max, period, name
 PRESETS = {
     "157": {"min": 280, "max": 330, "period": 15, "name": "Greyhound to Natural Bridges"},
-    "254": {"min": 250, "max": 310, "period": 12, "name": "SC Harbor Run"},
-    "118": {"min": 260, "max": 300, "period": 14, "name": "Leo Carrillo to Will Rogers"},
-    "103": {"min": 250, "max": 290, "period": 12, "name": "Malibu / Topanga Coastal"},
-    "107": {"min": 260, "max": 280, "period": 16, "name": "SB to Santa Claus Lane"},
+    "156": {"min": 280, "max": 330, "period": 15, "name": "Greyhound to Natural Bridges"},
+    "203": {"min": 260, "max": 280, "period": 16, "name": "SB to Santa Claus Lane"},
+    "103": {"min": 250, "max": 300, "period": 12, "name": "Malibu / Topanga Coastal"},
+    "028": {"min": 260, "max": 300, "period": 14, "name": "Leo Carrillo to Will Rogers"},
     "187": {"min": 300, "max": 360, "period": 16, "name": "Maliko Run"},
 }
 
@@ -81,9 +83,15 @@ max_period = st.sidebar.slider("Max Period (s)", 5, 25, default_tp)
 history_hours = st.sidebar.slider("History (hours)", 6, 72, 24)
 
 def localize_time(utc_dt):
-    """Converts UTC numpy datetime64 to Local Pacific Time string."""
+    """Converts UTC numpy datetime64 to Local Time string."""
     utc_dt = pd.to_datetime(utc_dt).replace(tzinfo=pytz.UTC)
-    local_tz = pytz.timezone("America/Los_Angeles")
+    
+    # Simple logic for HI vs CA
+    if "Hawaii" in area:
+        local_tz = pytz.timezone("Pacific/Honolulu")
+    else:
+        local_tz = pytz.timezone("America/Los_Angeles")
+        
     local_dt = utc_dt.astimezone(local_tz)
     return local_dt.strftime("%Y-%m-%d %I:%M %p %Z")
 
@@ -127,7 +135,11 @@ if data:
     
     if not history_df.empty:
         # Localize the entire time column for the charts
-        local_tz = pytz.timezone("America/Los_Angeles")
+        if "Hawaii" in area:
+            local_tz = pytz.timezone("Pacific/Honolulu")
+        else:
+            local_tz = pytz.timezone("America/Los_Angeles")
+            
         history_df['time'] = pd.to_datetime(history_df['time']).dt.tz_localize('UTC').dt.tz_convert(local_tz)
         
         # Highlight the Hs comparison
