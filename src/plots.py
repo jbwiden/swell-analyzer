@@ -107,12 +107,44 @@ def plot_polar_direction(frequency, energy, mean_dir, max_period=25):
     )
     return fig
 
-def plot_history_ts(history_df, variable="hs"):
+def plot_hs_comparison(history_df):
+    """
+    Plots Total Hs vs Rideable Hs over time.
+    """
+    fig = go.Figure()
+    
+    fig.add_trace(go.Scatter(
+        x=history_df["time"], 
+        y=history_df["hs_total"], 
+        mode='lines', 
+        name='Total Hs',
+        line=dict(color='cyan', width=2)
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=history_df["time"], 
+        y=history_df["hs_rideable"], 
+        mode='lines', 
+        name='Rideable Hs',
+        line=dict(color='orange', width=3),
+        fill='tozeroy'
+    ))
+    
+    fig.update_layout(
+        title="Wave Height History (Total vs. Rideable)",
+        xaxis_title="Time",
+        yaxis_title="Significant Height (m)",
+        template="plotly_dark",
+        height=400,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    return fig
+
+def plot_history_ts(history_df, variable="tp"):
     """
     Plots time series of a variable.
     """
     labels = {
-        "hs": "Significant Wave Height (m)",
         "tp": "Peak Period (s)",
         "dp": "Peak Direction (deg)"
     }

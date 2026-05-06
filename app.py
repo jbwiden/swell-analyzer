@@ -120,16 +120,17 @@ if data:
 
     # Plots row 2: History
     st.subheader("Historical Trends (UTC)")
-    history_df = get_history(ds, hours=history_hours)
+    history_df = get_history(ds, hours=history_hours, min_dir=min_dir, max_dir=max_dir, max_period=max_period)
     
     if not history_df.empty:
+        # Highlight the Hs comparison
+        st.plotly_chart(plot_hs_comparison(history_df), use_container_width=True)
+        
         h1, h2 = st.columns(2)
         with h1:
-            st.plotly_chart(plot_history_ts(history_df, "hs"), use_container_width=True)
-        with h2:
             st.plotly_chart(plot_history_ts(history_df, "tp"), use_container_width=True)
-            
-        st.plotly_chart(plot_history_ts(history_df, "dp"), use_container_width=True)
+        with h2:
+            st.plotly_chart(plot_history_ts(history_df, "dp"), use_container_width=True)
     else:
         st.warning("Could not retrieve historical data.")
 
