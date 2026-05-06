@@ -119,10 +119,14 @@ if data:
     st.plotly_chart(fig_polar, use_container_width=True)
 
     # Plots row 2: History
-    st.subheader("Historical Trends (UTC)")
+    st.subheader("Historical Trends (Local Time)")
     history_df = get_history(ds, hours=history_hours, min_dir=min_dir, max_dir=max_dir, max_period=max_period)
     
     if not history_df.empty:
+        # Localize the entire time column for the charts
+        local_tz = pytz.timezone("America/Los_Angeles")
+        history_df['time'] = pd.to_datetime(history_df['time']).dt.tz_localize('UTC').dt.tz_convert(local_tz)
+        
         # Highlight the Hs comparison
         st.plotly_chart(plot_hs_comparison(history_df), use_container_width=True)
         
