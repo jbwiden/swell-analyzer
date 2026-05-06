@@ -22,6 +22,7 @@ STATIONS = {
     "Malibu / LA": {
         "118": "Leo Carrillo Nearshore",
         "105": "Malibu Nearshore",
+        "103": "Topanga Nearshore",
         "028": "Santa Monica Basin (Offshore)",
     },
     "Northern California": {
@@ -39,10 +40,12 @@ STATIONS = {
 }
 
 # Logic for "Rideable" presets based on selection
+# min, max, period, name
 PRESETS = {
     "157": {"min": 280, "max": 330, "period": 15, "name": "Greyhound to Natural Bridges"},
     "254": {"min": 250, "max": 310, "period": 12, "name": "SC Harbor Run"},
-    "118": {"min": 280, "max": 310, "period": 14, "name": "Leo Carrillo to Will Rogers"},
+    "118": {"min": 260, "max": 300, "period": 14, "name": "Leo Carrillo to Will Rogers"},
+    "103": {"min": 250, "max": 290, "period": 12, "name": "Malibu / Topanga Coastal"},
     "107": {"min": 260, "max": 280, "period": 16, "name": "SB to Santa Claus Lane"},
     "187": {"min": 300, "max": 360, "period": 16, "name": "Maliko Run"},
 }
